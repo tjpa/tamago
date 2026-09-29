@@ -1,0 +1,6 @@
+pyproject.toml
+tamago.egg-info/PKG-INFO
+tamago.egg-info/SOURCES.txt
+tamago.egg-info/dependency_links.txt
+tamago.egg-info/requires.txt
+tamago.egg-info/top_level.txt
