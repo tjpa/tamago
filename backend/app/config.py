@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://tamago:tamago@localhost:5442/tamago"
     api_key: str | None = None
 
+    # Empty/unset in AWS: use real S3 with the default credential chain.
     s3_endpoint: str | None = "http://localhost:9090"
     s3_bucket: str = "tamago"
     s3_region: str = "us-east-1"

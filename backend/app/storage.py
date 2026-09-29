@@ -17,14 +17,19 @@ class Storage(Protocol):
 class S3Storage:
     def __init__(self) -> None:
         self.bucket = settings.s3_bucket
-        self.client = boto3.client(
-            "s3",
-            endpoint_url=settings.s3_endpoint,
-            region_name=settings.s3_region,
-            aws_access_key_id=settings.s3_access_key,
-            aws_secret_access_key=settings.s3_secret_key,
-            config=Config(s3={"addressing_style": "path"}),
-        )
+        kwargs: dict = {
+            "region_name": settings.s3_region,
+            "config": Config(s3={"addressing_style": "path"}),
+        }
+        if settings.s3_endpoint:
+            # Local S3-compatible mock: explicit endpoint and static test credentials.
+            kwargs.update(
+                endpoint_url=settings.s3_endpoint,
+                aws_access_key_id=settings.s3_access_key,
+                aws_secret_access_key=settings.s3_secret_key,
+            )
+        # Otherwise real AWS S3: boto3's default credential chain (task role, env, profile).
+        self.client = boto3.client("s3", **kwargs)
         self._ready = False
 
     def _ensure_bucket(self) -> None:

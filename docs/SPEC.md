@@ -30,7 +30,7 @@ and an event-driven (DB-backed queue + worker) architecture, built with an AI-as
 3. Screens in Pencil: job board, create job, job detail/status timeline, drivers, invoices — composed from the shadcn components in the .pen file
 4. Frontend: implement the screens in React/TS/shadcn; install `@shadcn/lint` (register plugin only, then agree rules)
 5. Compose + S3 mock, CI (ruff, pytest, oxlint, tsc), README with architecture notes
-6. (Optional) AWS deploy notes/Terraform-lite
+6. AWS deploy notes (done: `docs/AWS.md`, design only; no IaC or deployment)
 
 ## Design (Phase 3, approved via Pencil: `docs/design/tamago.pen`, PNGs in `docs/design/screens/`)
 - Dark theme, shadcn design system (Inter), left sidebar app shell (Jobs, Drivers & vehicles, Invoices)

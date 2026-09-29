@@ -92,4 +92,4 @@ Built in reviewed phases (backend, queue and worker, screens, frontend, delivery
 - Auth is a single optional API key; there are no users or roles.
 - The UI polls for updates instead of using push (SSE/WebSockets).
 - Lists aren't paginated.
-- Local infrastructure only: it uses the same `boto3` code path as AWS S3, but there is no AWS deployment or IaC yet.
+- Local infrastructure only: it uses the same `boto3` code path as AWS S3, but there is no AWS deployment or IaC yet. [`docs/AWS.md`](docs/AWS.md) describes how it would run on AWS.
