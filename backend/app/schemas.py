@@ -54,6 +54,8 @@ class JobEventOut(ORM):
 class InvoiceOut(ORM):
     id: int
     job_id: int
+    job_reference: str
+    customer_name: str
     number: str
     amount_pence: int
     status: InvoiceStatus

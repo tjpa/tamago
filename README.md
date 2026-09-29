@@ -16,3 +16,16 @@ cd backend && ../.venv/bin/alembic upgrade head
 Completing a job commits a `job.status_changed` task in the same transaction (outbox). The worker
 claims tasks with `FOR UPDATE SKIP LOCKED`, retries with exponential backoff, reaps tasks from
 crashed workers, and generates the invoice PDF (stored in S3) idempotently.
+
+## Run (frontend)
+
+```
+cd frontend && npm install
+npm run dev        # http://localhost:5180 (proxies /api to the backend on :8390)
+npm test           # vitest
+npm run lint       # oxlint (+ @shadcn/lint plugin registered, no rules enabled yet)
+npm run build
+python scripts/seed.py   # optional demo data (API must be running)
+```
+
+Design: `docs/design/tamago.pen` (Pencil) and PNGs in `docs/design/screens/`.

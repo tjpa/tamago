@@ -65,6 +65,11 @@ def test_end_to_end_completed_job_gets_invoiced(client, session, storage):
     assert detail["status"] == "invoiced"
     assert detail["invoice"]["number"] == f"INV-{job_id:05d}"
     assert detail["invoice"]["amount_pence"] == 12500
+    assert detail["invoice"]["job_reference"] == "JOB-00001"
+    assert detail["invoice"]["customer_name"] == "Acme Ltd"
+    listed = client.get("/invoices").json()
+    assert [i["number"] for i in listed] == [f"INV-{job_id:05d}"]
+    assert listed[0]["customer_name"] == "Acme Ltd"
     key = detail["invoice"]["document_key"]
     assert storage.objects[key][0].startswith(b"%PDF")
     assert [e["to_status"] for e in detail["events"]][-2:] == ["completed", "invoiced"]

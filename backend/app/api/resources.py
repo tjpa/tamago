@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.db import get_session
 from app.models import Driver, Invoice, Vehicle
@@ -42,7 +42,9 @@ def list_vehicles(session: Session = Depends(get_session)):
 
 @invoices.get("", response_model=list[InvoiceOut])
 def list_invoices(session: Session = Depends(get_session)):
-    return session.scalars(select(Invoice).order_by(Invoice.id.desc())).all()
+    return session.scalars(
+        select(Invoice).options(selectinload(Invoice.job)).order_by(Invoice.id.desc())
+    ).all()
 
 
 @invoices.get("/{invoice_id}", response_model=InvoiceOut)

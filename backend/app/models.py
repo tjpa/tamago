@@ -104,6 +104,14 @@ class Invoice(Base):
 
     job: Mapped[Job] = relationship(back_populates="invoice")
 
+    @property
+    def job_reference(self) -> str:
+        return self.job.reference
+
+    @property
+    def customer_name(self) -> str:
+        return self.job.customer_name
+
 
 class TaskStatus(enum.StrEnum):
     pending = "pending"
