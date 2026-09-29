@@ -43,6 +43,12 @@ export function JobsPage() {
     )
   }, [jobs.data, query, driver, status])
 
+  const driverItems = [
+    { value: ALL, label: "All drivers" },
+    ...(drivers.data ?? []).map((d) => ({ value: String(d.id), label: d.name })),
+  ]
+  const statusItems = [{ value: ALL, label: "All statuses" }, ...STATUSES.map((s) => ({ value: s.value, label: s.label }))]
+
   const open = (jobs.data ?? []).filter((j) => j.status !== "invoiced")
   const openTotal = open.reduce((sum, j) => sum + j.price_pence, 0)
   const byStatus = (s: JobStatus) => filtered.filter((j) => j.status === s)
@@ -79,7 +85,7 @@ export function JobsPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <Select value={driver} onValueChange={setDriver}>
+        <Select value={driver} onValueChange={(v) => setDriver(v ?? ALL)} items={driverItems}>
           <SelectTrigger aria-label="Filter by driver" className="w-48">
             <SelectValue />
           </SelectTrigger>
@@ -93,7 +99,7 @@ export function JobsPage() {
           </SelectContent>
         </Select>
         {view === "table" && (
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(v) => setStatus(v ?? ALL)} items={statusItems}>
             <SelectTrigger aria-label="Filter by status" className="w-48">
               <SelectValue />
             </SelectTrigger>
@@ -181,21 +187,21 @@ function JobsTable({ jobs, onOpen }: { jobs: Job[]; onOpen: (id: number) => void
       <TableBody>
         {jobs.map((j) => (
           <TableRow key={j.id} className="cursor-pointer" onClick={() => onOpen(j.id)}>
-            <TableCell className="font-medium">
+            <TableCell><span className="font-medium">
               <Link to={`/jobs/${j.id}`} onClick={(e) => e.stopPropagation()} className="hover:underline">
                 {j.reference}
               </Link>
-            </TableCell>
+            </span></TableCell>
             <TableCell>{j.customer_name}</TableCell>
-            <TableCell className="text-muted-foreground">
+            <TableCell><span className="text-muted-foreground">
               {j.pickup_address} → {j.dropoff_address}
-            </TableCell>
-            <TableCell className="text-muted-foreground">{j.driver?.name ?? "Unassigned"}</TableCell>
+            </span></TableCell>
+            <TableCell><span className="text-muted-foreground">{j.driver?.name ?? "Unassigned"}</span></TableCell>
             <TableCell>
               <StatusBadge status={j.status} />
             </TableCell>
             <TableCell>{money(j.price_pence)}</TableCell>
-            <TableCell className="text-muted-foreground">{timeAgo(j.created_at)}</TableCell>
+            <TableCell><span className="text-muted-foreground">{timeAgo(j.created_at)}</span></TableCell>
           </TableRow>
         ))}
       </TableBody>

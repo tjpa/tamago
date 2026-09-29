@@ -12,9 +12,31 @@
       {
         "allowConstantExport": true
       }
-    ]
+    ],
+    "shadcn/no-arbitrary-values": "error",
+    "shadcn/no-restyle": [
+      "error",
+      {
+        "allow": [
+          "layout"
+        ]
+      }
+    ],
+    "shadcn/no-raw-colors": "error"
   },
   "jsPlugins": [
     "@shadcn/lint"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "src/components/ui/**"
+      ],
+      "rules": {
+        "shadcn/no-restyle": "off",
+        "shadcn/no-arbitrary-values": "off",
+        "shadcn/no-raw-colors": "off"
+      }
+    }
   ]
 }

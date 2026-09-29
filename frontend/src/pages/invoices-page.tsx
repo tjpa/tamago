@@ -71,7 +71,7 @@ export function InvoicesPage() {
           <TableBody>
             {rows.map((i) => (
               <TableRow key={i.id}>
-                <TableCell className="font-medium">{i.number}</TableCell>
+                <TableCell><span className="font-medium">{i.number}</span></TableCell>
                 <TableCell>
                   <Link to={`/jobs/${i.job_id}`} className="text-muted-foreground hover:underline">
                     {i.job_reference}
@@ -79,16 +79,19 @@ export function InvoicesPage() {
                 </TableCell>
                 <TableCell>{i.customer_name}</TableCell>
                 <TableCell>{money(i.amount_pence)}</TableCell>
-                <TableCell className="text-muted-foreground">{shortDate(i.issued_at)}</TableCell>
+                <TableCell><span className="text-muted-foreground">{shortDate(i.issued_at)}</span></TableCell>
                 <TableCell>
                   <Badge variant="secondary">{i.status === "paid" ? "Paid" : "Issued"}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Button asChild variant="ghost" size="sm">
-                    <a href={api.invoices.documentUrl(i.id)} target="_blank" rel="noreferrer">
-                      <Download />
-                      PDF
-                    </a>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    nativeButton={false}
+                    render={<a href={api.invoices.documentUrl(i.id)} target="_blank" rel="noreferrer" />}
+                  >
+                    <Download />
+                    PDF
                   </Button>
                 </TableCell>
               </TableRow>

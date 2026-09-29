@@ -30,9 +30,7 @@ export function JobDetailPage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to="/jobs">Jobs</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink render={<Link to="/jobs" />}>Jobs</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -79,25 +77,29 @@ function Detail({ job }: { job: JobDetail }) {
         />
       </div>
 
-      <div className="grid grid-cols-[1fr_380px] items-start gap-6">
-        <div className="flex flex-col gap-6">
+      <div className="flex items-start gap-6">
+        <div className="flex flex-1 flex-col gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Job details</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 text-sm">
+            <CardContent>
+              <div className="flex flex-col gap-4 text-sm">
               <Row label="Customer" value={job.customer_name} />
               <Row label="Price" value={<strong>{money(job.price_pence)}</strong>} />
               <Row label="Description" value={job.description || "—"} />
+            </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
               <CardTitle>Route</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 text-sm">
+            <CardContent>
+              <div className="flex flex-col gap-4 text-sm">
               <Stop icon="pickup" label="Pickup" address={job.pickup_address} />
               <Stop icon="dropoff" label="Dropoff" address={job.dropoff_address} />
+            </div>
             </CardContent>
           </Card>
           <Card>
@@ -110,7 +112,7 @@ function Detail({ job }: { job: JobDetail }) {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex w-95 flex-col gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Status history</CardTitle>
@@ -123,7 +125,8 @@ function Detail({ job }: { job: JobDetail }) {
             <CardHeader>
               <CardTitle>Assignment</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 text-sm">
+            <CardContent>
+              <div className="flex flex-col gap-4 text-sm">
               {job.driver ? (
                 <>
                   <Row label="Driver" value={job.driver.name} />
@@ -133,6 +136,7 @@ function Detail({ job }: { job: JobDetail }) {
               ) : (
                 <p className="text-muted-foreground">Not assigned yet. Dispatch the job to choose a driver.</p>
               )}
+            </div>
             </CardContent>
           </Card>
         </div>
@@ -187,11 +191,13 @@ function PrimaryAction({
       </Button>
     )
   return job.invoice ? (
-    <Button asChild variant="outline">
-      <a href={api.invoices.documentUrl(job.invoice.id)} target="_blank" rel="noreferrer">
-        <Download />
-        Download invoice
-      </a>
+    <Button
+      variant="outline"
+      nativeButton={false}
+      render={<a href={api.invoices.documentUrl(job.invoice.id)} target="_blank" rel="noreferrer" />}
+    >
+      <Download />
+      Download invoice
     </Button>
   ) : null
 }
@@ -228,11 +234,13 @@ function InvoicePanel({ job }: { job: JobDetail }) {
             {money(job.invoice.amount_pence)} · issued {dateTime(job.invoice.issued_at)}
           </span>
         </div>
-        <Button asChild variant="outline">
-          <a href={api.invoices.documentUrl(job.invoice.id)} target="_blank" rel="noreferrer">
-            <Download />
-            PDF
-          </a>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<a href={api.invoices.documentUrl(job.invoice.id)} target="_blank" rel="noreferrer" />}
+        >
+          <Download />
+          PDF
         </Button>
       </div>
     )

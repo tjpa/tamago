@@ -32,6 +32,12 @@ export function DispatchDialog({
   const [vehicleId, setVehicleId] = useState(NO_VEHICLE)
   const [error, setError] = useState("")
 
+  const driverItems = (drivers.data ?? []).filter((d) => d.active).map((d) => ({ value: String(d.id), label: d.name }))
+  const vehicleItems = [
+    { value: NO_VEHICLE, label: "No vehicle" },
+    ...(vehicles.data ?? []).map((v) => ({ value: String(v.id), label: `${v.plate} · ${v.kind}` })),
+  ]
+
   function submit() {
     if (!driverId) {
       setError("Choose a driver")
@@ -61,8 +67,9 @@ export function DispatchDialog({
         <Field label="Driver" htmlFor="driver" error={error}>
           <Select
             value={driverId}
+            items={driverItems}
             onValueChange={(v) => {
-              setDriverId(v)
+              setDriverId(v ?? "")
               setError("")
             }}
           >
@@ -81,7 +88,7 @@ export function DispatchDialog({
           </Select>
         </Field>
         <Field label="Vehicle (optional)" htmlFor="vehicle">
-          <Select value={vehicleId} onValueChange={setVehicleId}>
+          <Select value={vehicleId} onValueChange={(v) => setVehicleId(v ?? NO_VEHICLE)} items={vehicleItems}>
             <SelectTrigger id="vehicle" className="w-full">
               <SelectValue placeholder="Select a vehicle" />
             </SelectTrigger>

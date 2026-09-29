@@ -50,8 +50,8 @@ export function DriversPage() {
           </>
         }
       />
-      <div className="grid grid-cols-[1fr_420px] items-start gap-6">
-        <section className="flex flex-col gap-3">
+      <div className="flex items-start gap-6">
+        <section className="flex flex-1 flex-col gap-3">
           <h2 className="text-base font-semibold">Drivers</h2>
           {drivers.isPending ? (
             <LoadingBlocks rows={4} height="h-10" />
@@ -72,9 +72,9 @@ export function DriversPage() {
               <TableBody>
                 {drivers.data.map((d) => (
                   <TableRow key={d.id}>
-                    <TableCell className="font-medium">{d.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{d.phone ?? "—"}</TableCell>
-                    <TableCell className="text-muted-foreground">{openJobs(d.id)}</TableCell>
+                    <TableCell><span className="font-medium">{d.name}</span></TableCell>
+                    <TableCell><span className="text-muted-foreground">{d.phone ?? "—"}</span></TableCell>
+                    <TableCell><span className="text-muted-foreground">{openJobs(d.id)}</span></TableCell>
                     <TableCell>
                       <Badge variant={d.active ? "secondary" : "outline"}>{d.active ? "Active" : "Inactive"}</Badge>
                     </TableCell>
@@ -84,7 +84,7 @@ export function DriversPage() {
             </Table>
           )}
         </section>
-        <section className="flex flex-col gap-3">
+        <section className="flex w-105 flex-col gap-3">
           <h2 className="text-base font-semibold">Vehicles</h2>
           {vehicles.isPending ? (
             <LoadingBlocks rows={4} height="h-10" />
@@ -103,8 +103,8 @@ export function DriversPage() {
               <TableBody>
                 {vehicles.data.map((v) => (
                   <TableRow key={v.id}>
-                    <TableCell className="font-medium">{v.plate}</TableCell>
-                    <TableCell className="text-muted-foreground">{v.kind}</TableCell>
+                    <TableCell><span className="font-medium">{v.plate}</span></TableCell>
+                    <TableCell><span className="text-muted-foreground">{v.kind}</span></TableCell>
                   </TableRow>
                 ))}
               </TableBody>

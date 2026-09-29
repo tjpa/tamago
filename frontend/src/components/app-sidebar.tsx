@@ -1,5 +1,5 @@
 import { Egg, Package, Receipt, Truck } from "lucide-react"
-import { NavLink } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -22,6 +22,7 @@ const NAV = [
 ]
 
 export function AppSidebar() {
+  const { pathname } = useLocation()
   return (
     <Sidebar collapsible="none" className="h-svh">
       <SidebarHeader>
@@ -42,16 +43,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {NAV.map(({ to, label, icon: Icon }) => (
                 <SidebarMenuItem key={to}>
-                  <NavLink to={to}>
-                    {({ isActive }) => (
-                      <SidebarMenuButton asChild isActive={isActive}>
-                        <span>
-                          <Icon />
-                          {label}
-                        </span>
-                      </SidebarMenuButton>
-                    )}
-                  </NavLink>
+                  <SidebarMenuButton render={<Link to={to} />} isActive={pathname.startsWith(to)}>
+                    <Icon />
+                    {label}
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -60,8 +55,8 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="flex items-center gap-2 p-2">
-          <Avatar className="size-8">
-            <AvatarFallback className="text-xs font-semibold">DD</AvatarFallback>
+          <Avatar>
+            <AvatarFallback>DD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-medium">Dispatch desk</span>
