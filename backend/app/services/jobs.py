@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Driver, Job, JobEvent, JobStatus, Vehicle
+from app.services.tasks import enqueue
 
 TRANSITIONS: dict[JobStatus, JobStatus] = {
     JobStatus.created: JobStatus.dispatched,
@@ -26,6 +27,12 @@ def next_reference(session: Session) -> str:
 
 def record(session: Session, job: Job, to: JobStatus, from_: JobStatus | None) -> None:
     session.add(JobEvent(job=job, from_status=from_, to_status=to))
+    session.flush()
+    enqueue(
+        session,
+        "job.status_changed",
+        {"job_id": job.id, "from_status": from_.value if from_ else None, "to_status": to.value},
+    )
 
 
 def create_job(session: Session, **fields) -> Job:

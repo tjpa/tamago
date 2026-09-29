@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_session
 from app.models import Driver, Invoice, Vehicle
 from app.schemas import DriverIn, DriverOut, InvoiceOut, VehicleIn, VehicleOut
+from app.storage import Storage, get_storage
 
 drivers = APIRouter(prefix="/drivers", tags=["drivers"])
 vehicles = APIRouter(prefix="/vehicles", tags=["vehicles"])
@@ -50,3 +51,15 @@ def get_invoice(invoice_id: int, session: Session = Depends(get_session)):
     if invoice is None:
         raise HTTPException(404, "invoice not found")
     return invoice
+
+
+@invoices.get("/{invoice_id}/document")
+def get_invoice_document(
+    invoice_id: int,
+    session: Session = Depends(get_session),
+    storage: Storage = Depends(get_storage),
+):
+    invoice = session.get(Invoice, invoice_id)
+    if invoice is None or not invoice.document_key:
+        raise HTTPException(404, "invoice document not found")
+    return Response(storage.get(invoice.document_key), media_type="application/pdf")

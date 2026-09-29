@@ -16,5 +16,12 @@ services:
       timeout: 3s
       retries: 20
 
+  s3:
+    image: adobe/s3mock
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: tamago
+    ports:
+      - "9090:9090"
+
 volumes:
   pgdata:
