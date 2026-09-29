@@ -32,5 +32,11 @@ and an event-driven (DB-backed queue + worker) architecture, built with an AI-as
 5. Compose + S3 mock, CI (ruff, pytest, oxlint, tsc), README with architecture notes
 6. (Optional) AWS deploy notes/Terraform-lite
 
+## Design (Phase 3, approved via Pencil: `docs/design/tamago.pen`, PNGs in `docs/design/screens/`)
+- Dark theme, shadcn design system (Inter), left sidebar app shell (Jobs, Drivers & vehicles, Invoices)
+- Screens: Jobs board (Kanban by status) / Jobs table (toggle), Job detail (status timeline, assignment, invoice), Drivers & vehicles, Invoices, New job dialog, Dispatch dialog, states (loading/empty/error/success)
+- Status colours are design tokens (`--status-<state>` and `--status-<state>-bg`, light + dark) added to the .pen file; map to CSS variables in the frontend
+- The primary action on job detail is contextual: Dispatch (created) → Start (dispatched) → Mark completed (in_transit); `invoiced` is set by the worker, never by the UI
+
 ## Non-goals
 Auth beyond a simple API key, maps/routing, Kafka/DynamoDB/Kinesis.
