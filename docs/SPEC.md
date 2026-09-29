@@ -7,7 +7,9 @@ and an event-driven (DB-backed queue + worker) architecture, built with an AI-as
 ## Stack
 - Backend: FastAPI, SQLAlchemy 2 + Alembic, PostgreSQL 16, pytest
 - Worker: separate process, polls `tasks` table, atomic claim via `FOR UPDATE SKIP LOCKED`
-- Frontend: React + TypeScript + Vite, TanStack Query
+- Frontend: React + TypeScript + Vite, TanStack Query, Tailwind v4 + shadcn/ui
+- Design: screens designed in Pencil (`tamago.pen`, shadcn design system) before frontend code; frontend built from those screens
+- Lint: `@shadcn/lint` (Oxlint) for design-system rules, set up per its SETUP.md; ruff for Python
 - Infra: Docker Compose (api, worker, db, web). S3-compatible storage via MinIO locally; same boto3 code targets AWS S3.
 - CI: GitHub Actions (lint, tests)
 
@@ -25,9 +27,10 @@ and an event-driven (DB-backed queue + worker) architecture, built with an AI-as
 ## Phases (each gated on review)
 1. Backend core: models, migrations, job/driver API, tests
 2. Queue + worker: outbox, claim/retry, invoice handler, tests
-3. Frontend: job board, create job, status, invoices
-4. Compose + MinIO, CI, README with architecture notes
-5. (Optional) AWS deploy notes/Terraform-lite
+3. Screens in Pencil: job board, create job, job detail/status timeline, drivers, invoices — composed from the shadcn components in the .pen file
+4. Frontend: implement the screens in React/TS/shadcn; install `@shadcn/lint` (register plugin only, then agree rules)
+5. Compose + MinIO, CI (ruff, pytest, oxlint, tsc), README with architecture notes
+6. (Optional) AWS deploy notes/Terraform-lite
 
 ## Non-goals
 Auth beyond a simple API key, maps/routing, Kafka/DynamoDB/Kinesis.
