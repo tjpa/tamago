@@ -1,3 +1,8 @@
+x-backend-env: &backend-env
+  TAMAGO_DATABASE_URL: postgresql+psycopg://tamago:tamago@db:5432/tamago
+  TAMAGO_S3_ENDPOINT: http://s3:9090
+  TAMAGO_S3_BUCKET: tamago
+
 services:
   db:
     image: postgres:16
@@ -22,6 +27,50 @@ services:
       COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: tamago
     ports:
       - "9090:9090"
+
+  migrate:
+    build: ./backend
+    command: ["alembic", "upgrade", "head"]
+    environment: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: ./backend
+    environment: *backend-env
+    ports:
+      - "8390:8390"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      s3:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8390/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  worker:
+    build: ./backend
+    command: ["python", "-m", "app.worker"]
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      s3:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:
