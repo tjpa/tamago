@@ -19,7 +19,13 @@ class S3Storage:
         self.bucket = settings.s3_bucket
         kwargs: dict = {
             "region_name": settings.s3_region,
-            "config": Config(s3={"addressing_style": "path"}),
+            "config": Config(
+                s3={"addressing_style": "path"},
+                # Newer boto3 adds CRC32 checksums by default; S3-compatible stores
+                # such as Cloudflare R2 need them only when the operation requires it.
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+            ),
         }
         if settings.s3_endpoint:
             # Local S3-compatible mock: explicit endpoint and static test credentials.
@@ -33,7 +39,7 @@ class S3Storage:
         self._ready = False
 
     def _ensure_bucket(self) -> None:
-        if self._ready:
+        if self._ready or not settings.s3_auto_create_bucket:
             return
         try:
             self.client.head_bucket(Bucket=self.bucket)

@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir .
 
 COPY alembic.ini ./
 COPY alembic ./alembic
+COPY scripts ./scripts
 
 RUN useradd --create-home tamago
 USER tamago

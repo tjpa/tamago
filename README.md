@@ -73,11 +73,15 @@ cd frontend && npm install && npm run dev         # http://localhost:5180
 ## Tests and checks
 
 ```
-make test          # pytest (21 tests: lifecycle, queue, retry, idempotency, S3) and vitest
+make test          # pytest (24 tests: lifecycle, queue, retry, idempotency, S3) and vitest
 make lint          # ruff, tsc, oxlint (with @shadcn/lint)
 ```
 
 Backend tests run against a real PostgreSQL (`tamago_test`) and refuse to run against any database whose name doesn't end in `_test`. CI runs the same checks, plus `alembic upgrade` / `check` / `downgrade` to confirm migrations match the models, and builds the Docker images.
+
+## Deploying
+
+[`docs/DEPLOY.md`](docs/DEPLOY.md) covers a VPS deployment with Dokploy, Cloudflare R2 for invoice storage, and Cloudflare Access in front. It uses `docker-compose.prod.yml`, which publishes no ports. [`docs/AWS.md`](docs/AWS.md) describes how it would map onto AWS.
 
 ## Design-system linting
 

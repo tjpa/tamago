@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     # Empty/unset in AWS: use real S3 with the default credential chain.
     s3_endpoint: str | None = "http://localhost:9090"
     s3_bucket: str = "tamago"
+    # Local dev creates the bucket on first use; in production the bucket exists already
+    # and the credentials usually cannot create or inspect buckets.
+    s3_auto_create_bucket: bool = True
     s3_region: str = "us-east-1"
     s3_access_key: str = "test"
     s3_secret_key: str = "test"

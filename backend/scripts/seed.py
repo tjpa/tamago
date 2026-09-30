@@ -1,6 +1,6 @@
 """Seed demo data through the public API (skips if jobs already exist).
 
-    python scripts/seed.py [http://localhost:8390]
+python scripts/seed.py [http://localhost:8390]
 """
 
 import json
@@ -25,15 +25,24 @@ if call("GET", "/jobs"):
     print("jobs already exist, skipping seed")
     raise SystemExit
 
-drivers = [call("POST", "/drivers", {"name": n, "phone": p}) for n, p in [
-    ("Sam Murphy", "07700 900101"),
-    ("Aoife Kerr", "07700 900123"),
-    ("Ciaran Doyle", "07700 900142"),
-    ("Niamh Boyd", "07700 900188"),
-]]
-vehicles = [call("POST", "/vehicles", {"plate": p, "kind": k}) for p, k in [
-    ("KLZ 4821", "Van"), ("BJZ 1183", "Van"), ("RXZ 9052", "Luton"), ("AB12 CDE", "Van"),
-]]
+drivers = [
+    call("POST", "/drivers", {"name": n, "phone": p})
+    for n, p in [
+        ("Sam Murphy", "07700 900101"),
+        ("Aoife Kerr", "07700 900123"),
+        ("Ciaran Doyle", "07700 900142"),
+        ("Niamh Boyd", "07700 900188"),
+    ]
+]
+vehicles = [
+    call("POST", "/vehicles", {"plate": p, "kind": k})
+    for p, k in [
+        ("KLZ 4821", "Van"),
+        ("BJZ 1183", "Van"),
+        ("RXZ 9052", "Luton"),
+        ("AB12 CDE", "Van"),
+    ]
+]
 
 # (customer, pickup, dropoff, pence, driver index or None, final state)
 jobs = [
@@ -49,14 +58,24 @@ jobs = [
 ]
 order = ["created", "dispatched", "in_transit", "completed"]
 for i, (cust, pick, drop, pence, d, final) in enumerate(jobs):
-    job = call("POST", "/jobs", {
-        "customer_name": cust, "pickup_address": pick, "dropoff_address": drop,
-        "description": "", "price_pence": pence,
-    })
+    job = call(
+        "POST",
+        "/jobs",
+        {
+            "customer_name": cust,
+            "pickup_address": pick,
+            "dropoff_address": drop,
+            "description": "",
+            "price_pence": pence,
+        },
+    )
     step = order.index(final)
     if step >= 1:
-        call("POST", f"/jobs/{job['id']}/dispatch",
-             {"driver_id": drivers[d]["id"], "vehicle_id": vehicles[i % len(vehicles)]["id"]})
+        call(
+            "POST",
+            f"/jobs/{job['id']}/dispatch",
+            {"driver_id": drivers[d]["id"], "vehicle_id": vehicles[i % len(vehicles)]["id"]},
+        )
     if step >= 2:
         call("POST", f"/jobs/{job['id']}/start")
     if step >= 3:

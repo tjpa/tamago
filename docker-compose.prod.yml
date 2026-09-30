@@ -1,0 +1,72 @@
+# Production stack (Dokploy / any Docker host behind a reverse proxy).
+# No ports are published: route your domain to the `web` service on port 80.
+# Object storage is external (Cloudflare R2 or any S3-compatible service).
+# See docs/DEPLOY.md.
+
+x-backend-env: &backend-env
+  TAMAGO_DATABASE_URL: postgresql+psycopg://tamago:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/tamago
+  TAMAGO_S3_ENDPOINT: ${S3_ENDPOINT:?set S3_ENDPOINT}
+  TAMAGO_S3_BUCKET: ${S3_BUCKET:?set S3_BUCKET}
+  TAMAGO_S3_REGION: ${S3_REGION:-auto}
+  TAMAGO_S3_ACCESS_KEY: ${S3_ACCESS_KEY_ID:?set S3_ACCESS_KEY_ID}
+  TAMAGO_S3_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY}
+  TAMAGO_S3_AUTO_CREATE_BUCKET: "false"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tamago
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: tamago
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tamago"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: ./backend
+    command: ["alembic", "upgrade", "head"]
+    environment: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8390/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  worker:
+    build: ./backend
+    restart: unless-stopped
+    command: ["python", "-m", "app.worker"]
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
